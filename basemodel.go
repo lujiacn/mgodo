@@ -1,4 +1,4 @@
-package mgofun
+package mgodo
 
 import (
 	"time"
