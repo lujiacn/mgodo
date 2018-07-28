@@ -4,6 +4,10 @@ Wrapped mgo operator
 
 Check the code for details. No validation and using with your own risk.
 
+```go
+import mgodo "gopkg.in/lujiacn/mgodo.v0"
+```
+
 
 
 
