@@ -1,17 +1,9 @@
 
-Wrapped mgo functions
+Wrapped mgo operator
 ====
 
 Check the code for details. No validation and using with your own risk.
 
-- version2, using mgo.v2
-```go
-import gopkg.in/lujiacn/mgofun.v2
-```
-- version3, using globalsign/mgo
-```go
-import gopkg.in/lujiacn/mgofun.v3
-```
 
 
 

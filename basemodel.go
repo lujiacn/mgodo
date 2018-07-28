@@ -9,7 +9,8 @@ import (
 
 const (
 	UPDATE = "UPDATE"
-	DELETE = "DELETE"
+	DELETE = "DELETE" // soft delete
+	ERASE  = "ERASE"  // hard delete
 )
 
 // BaseModel to be emmbered to other struct as audit trail perpurse

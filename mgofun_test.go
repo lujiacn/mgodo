@@ -6,8 +6,6 @@ import (
 
 	mgo "github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
-	//mgo "gopkg.in/mgo.v2"
-	//"gopkg.in/mgo.v2/bson"
 )
 
 type User struct {
@@ -38,9 +36,9 @@ func TestFuncsSave(t *testing.T) {
 	user2.Id = bson.NewObjectId()
 
 	//conduct op
-	op := NewMgoFun(s, dbName, user)
+	op := NewDo(s, dbName, user, "Jia", "test")
 	op.Save()
-	op = NewMgoFun(s, dbName, user2)
+	op = NewDo(s, dbName, user2, "Jia", "test")
 	err = op.Save()
 	if err != nil {
 		fmt.Println("Err during save: ", err)
@@ -55,7 +53,7 @@ func TestFindAll(t *testing.T) {
 	}
 
 	user := new(User)
-	op := NewMgoFun(s, dbName, user)
+	op := NewDo(s, dbName, user, "Jia", "")
 	fmt.Println(op.Count())
 
 	// for FindAll
