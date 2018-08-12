@@ -33,9 +33,9 @@ func Connect() {
 	var found bool
 
 	Dial = revel.Config.StringDefault("mongodb.dial", "localhost")
-	if MgoDBName, found = revel.Config.String("mongodb.name"); !found {
+	if DBName, found = revel.Config.String("mongodb.name"); !found {
 		urls := strings.Split(Dial, "/")
-		MgoDBName = urls[len(urls)-1]
+		DBName = urls[len(urls)-1]
 	}
 
 	Session, err = mgo.Dial(Dial)
@@ -53,7 +53,7 @@ func Connect() {
 }
 
 func NewMgoSession() *mgo.Session {
-	s := MgoSession.Clone()
+	s := Session.Clone()
 	return s
 }
 
@@ -72,7 +72,7 @@ type Controller struct {
 //Begin do mgo connection
 func (c *Controller) Begin() revel.Result {
 	if Session == nil {
-		DBConnect()
+		Connect()
 	}
 
 	c.Session = Session.Clone()
