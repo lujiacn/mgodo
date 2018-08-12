@@ -23,12 +23,12 @@ type Do struct {
 }
 
 //NewDo initiate with input model and mgo session
-func NewDo(s *mgo.Session, dbName string, model interface{}, operator, reason string) *Do {
+func NewDo(s *mgo.Session, dbName string, model interface{}) *Do {
 	do := &Do{model: model, session: s}
 	do.collection = Collection(s, dbName, model)
 	do.logCollection = Collection(s, dbName, "ChangeLog")
-	do.Operator = operator
-	do.Reason = reason
+	//do.Operator = operator
+	//do.Reason = reason
 	return do
 }
 
