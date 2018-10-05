@@ -32,6 +32,16 @@ func NewDo(s *mgo.Session, dbName string, model interface{}) *Do {
 	return do
 }
 
+//New create a *Do with pre-defined DBName
+func New(s *mgo.Session, model interface{}) *Do {
+	do := &Do{model: model, session: s}
+	do.collection = Collection(s, DBName, model)
+	do.logCollection = Collection(s, DBName, "ChangeLog")
+	//do.Operator = operator
+	//do.Reason = reason
+	return do
+}
+
 // Collection conduct mgo.Collection
 func Collection(s *mgo.Session, dbName string, m interface{}) *mgo.Collection {
 	cName := getModelName(m)
