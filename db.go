@@ -66,7 +66,7 @@ func ControllerInit() {
 //MgoController including the mgo session
 type MgoController struct {
 	*revel.Controller
-	Session *mgo.Session
+	MgoSession *mgo.Session
 }
 
 //Begin do mgo connection
@@ -75,14 +75,14 @@ func (c *MgoController) Begin() revel.Result {
 		Connect()
 	}
 
-	c.Session = Session.Clone()
+	c.MgoSession = Session.Clone()
 	return nil
 }
 
 //End close mgo session
 func (c *MgoController) End() revel.Result {
-	if c.Session != nil {
-		c.Session.Close()
+	if c.MgoSession != nil {
+		c.MgoSession.Close()
 	}
 	return nil
 }
