@@ -58,7 +58,7 @@ func NewMgoSession() *mgo.Session {
 }
 
 //MgoControllerInit should be put in controller init function
-func ControllerInit() {
+func MgoControllerInit() {
 	revel.InterceptMethod((*MgoController).Begin, revel.BEFORE)
 	revel.InterceptMethod((*MgoController).End, revel.FINALLY)
 }
