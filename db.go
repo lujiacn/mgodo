@@ -64,13 +64,13 @@ func ControllerInit() {
 }
 
 //MgoController including the mgo session
-type Controller struct {
+type MgoController struct {
 	*revel.Controller
 	Session *mgo.Session
 }
 
 //Begin do mgo connection
-func (c *Controller) Begin() revel.Result {
+func (c *MgoController) Begin() revel.Result {
 	if Session == nil {
 		Connect()
 	}
@@ -80,7 +80,7 @@ func (c *Controller) Begin() revel.Result {
 }
 
 //End close mgo session
-func (c *Controller) End() revel.Result {
+func (c *MgoController) End() revel.Result {
 	if c.Session != nil {
 		c.Session.Close()
 	}
