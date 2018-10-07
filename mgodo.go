@@ -252,6 +252,13 @@ func (m *Do) GetByQ() error {
 	return err
 }
 
+//Fetch match result to a structure
+func (m *Do) FetchByQ(record interface{}) error {
+	query := m.findQ()
+	err := query.One(record)
+	return err
+}
+
 //Select query and select columns
 func (m *Do) FindWithSelect(i interface{}, cols []string) error {
 	sCols := bson.M{}
