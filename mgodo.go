@@ -200,8 +200,6 @@ func (m *Do) findQ() *mgo.Query {
 	//sort
 	if m.Sort != nil {
 		query = query.Sort(m.Sort...)
-	} else {
-		query = query.Sort("-UpdatedAt", "-CreatedAt")
 	}
 
 	//skip
