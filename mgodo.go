@@ -2,6 +2,7 @@ package mgodo
 
 import (
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/globalsign/mgo"
@@ -261,7 +262,12 @@ func (m *Do) FetchByQ(record interface{}) error {
 func (m *Do) FindWithSelect(i interface{}, cols []string) error {
 	sCols := bson.M{}
 	for _, v := range cols {
-		sCols[v] = 1
+		if strings.HasPrefix(v, "-") {
+			t := v[1 : len(v)-1]
+			sCols[t] = -1
+		} else {
+			sCols[v] = 1
+		}
 	}
 	query := m.findQ().Select(sCols)
 	err := query.All(i)
