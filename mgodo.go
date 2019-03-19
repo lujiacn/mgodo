@@ -284,7 +284,12 @@ func (m *Do) Distinct(key string, i interface{}) error {
 func (m *Do) GetWithSelect(cols []string) error {
 	sCols := bson.M{}
 	for _, v := range cols {
-		sCols[v] = 1
+		if strings.HasPrefix(v, "-") {
+			t := v[1 : len(v)-1]
+			sCols[t] = -1
+		} else {
+			sCols[v] = 1
+		}
 	}
 	query := m.findByIdQ().Select(sCols)
 	err := query.One(m.model)
