@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
@@ -17,7 +18,7 @@ var (
 	Dial    string
 )
 
-//Init setup mgo connection
+//App Init setup mgo connection
 func Init() {
 	//init mgoDB
 	Connect()
@@ -37,17 +38,20 @@ func Connect() {
 		urls := strings.Split(Dial, "/")
 		DBName = urls[len(urls)-1]
 	}
-
-	Session, err = mgo.Dial(Dial)
-
-	if err != nil {
-		panic("Cannot connect to database")
-	}
-
 	if Session == nil {
 		Session, err = mgo.Dial(Dial)
 		if err != nil {
-			panic("Cannot connect to database")
+			revel.AppLog.Errorf("Could not connect to Mongo DB. Error: %s", err)
+			for i := 0; i <= 3; i++ {
+				revel.AppLog.Infof("Retry connect to database ...")
+				time.Sleep(3 * time.Second)
+				Session, err = mgo.Dial(Dial)
+				if err == nil {
+					break
+				} else {
+					revel.AppLog.Errorf("Could not connect to Mongo DB. Error: %s", err)
+				}
+			}
 		}
 	}
 }
