@@ -69,7 +69,6 @@ func MgoControllerInit() {
 
 //MgoController including the mgo session
 type MgoController struct {
-	*revel.Controller
 	MgoSession *mgo.Session
 }
 
