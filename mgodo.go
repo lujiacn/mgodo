@@ -43,6 +43,16 @@ func New(s *mgo.Session, model interface{}) *Do {
 	return do
 }
 
+// New with C, with collection Name for collection name diff with model name
+func NewWithC(s *mgo.Session, model interface{}, cName string) *Do {
+	do := &Do{model: model, session: s}
+	do.collection = Collection(s, DBName, cName)
+	do.logCollection = Collection(s, DBName, "ChangeLog")
+	//do.Operator = operator
+	//do.Reason = reason
+	return do
+}
+
 // Collection conduct mgo.Collection
 func Collection(s *mgo.Session, dbName string, m interface{}) *mgo.Collection {
 	cName := getModelName(m)

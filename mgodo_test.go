@@ -36,9 +36,9 @@ func TestFuncsSave(t *testing.T) {
 	user2.Id = bson.NewObjectId()
 
 	//conduct op
-	op := NewDo(s, dbName, user, "Jia", "test")
+	op := NewDo(s, dbName, user)
 	op.Save()
-	op = NewDo(s, dbName, user2, "Jia", "test")
+	op = NewDo(s, dbName, user2)
 	err = op.Save()
 	if err != nil {
 		fmt.Println("Err during save: ", err)
@@ -53,7 +53,7 @@ func TestFindAll(t *testing.T) {
 	}
 
 	user := new(User)
-	op := NewDo(s, dbName, user, "Jia", "")
+	op := NewDo(s, dbName, user)
 	fmt.Println(op.Count())
 
 	// for FindAll
