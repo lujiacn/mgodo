@@ -56,6 +56,11 @@ func Connect() {
 	}
 }
 
+// NewConnect return mgo.Session for manual input mongodb information
+func NewConnect(conStr string) (*mgo.Session, error) {
+	return mgo.Dial(conStr)
+}
+
 func NewMgoSession() *mgo.Session {
 	s := Session.Clone()
 	return s
