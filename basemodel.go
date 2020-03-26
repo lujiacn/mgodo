@@ -23,6 +23,7 @@ type BaseModel struct {
 	IsRemoved bool          `bson:"IsRemoved,omitempty"`
 	RemovedAt time.Time     `bson:"RemovedAt,omitempty"`
 	RemovedBy string        `bson:"RemovedBy,omitempty"`
+	IsLocked  bool          `bson:"IsLocked,omitempty"`
 }
 
 //ChangeLog

@@ -1,6 +1,7 @@
 package mgodo
 
 import (
+	"errors"
 	"reflect"
 	"strings"
 	"time"
@@ -95,6 +96,17 @@ func (m *Do) Save() error {
 	x.Set(reflect.ValueOf(time.Now()))
 	by := reflect.ValueOf(m.model).Elem().FieldByName("UpdatedBy")
 	by.Set(reflect.ValueOf(m.Operator))
+	// check IsLocked flag
+	record := map[string]interface{}{}
+	m.collection.FindId(id.Interface()).Select([]interface{}{"IsLocked"}).One(&record)
+	if record != nil {
+		if v, found := record["IsLocked"]; found {
+			if v.(bool) {
+				return errors.New("Recorded locked for update.")
+			}
+		}
+	}
+
 	_, err := m.collection.Upsert(bson.M{"_id": id.Interface()}, bson.M{"$set": m.model})
 	return err
 }
