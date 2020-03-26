@@ -98,7 +98,7 @@ func (m *Do) Save() error {
 	by.Set(reflect.ValueOf(m.Operator))
 	// check IsLocked flag
 	record := map[string]interface{}{}
-	m.collection.FindId(id.Interface()).Select([]interface{}{"IsLocked"}).One(&record)
+	m.collection.FindId(id.Interface()).Select(bson.M{"IsLocked": 1}).One(&record)
 	if record != nil {
 		if v, found := record["IsLocked"]; found {
 			if v.(bool) {
