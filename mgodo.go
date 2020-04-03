@@ -156,6 +156,17 @@ func (m *Do) Delete() error {
 	removed := reflect.ValueOf(m.model).Elem().FieldByName("IsRemoved")
 	removed.Set(reflect.ValueOf(true))
 
+	// check IsLocked flag
+	record := map[string]interface{}{}
+	m.collection.FindId(id.Interface()).Select(bson.M{"IsLocked": 1}).One(&record)
+	if record != nil {
+		if v, found := record["IsLocked"]; found {
+			if v.(bool) {
+				return errors.New("Recorded locked for update.")
+			}
+		}
+	}
+
 	_, err := m.collection.Upsert(bson.M{"_id": id.Interface()}, bson.M{"$set": m.model})
 	return err
 }
