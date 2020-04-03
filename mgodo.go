@@ -102,7 +102,7 @@ func (m *Do) Save() error {
 	if record != nil {
 		if v, found := record["IsLocked"]; found {
 			if v.(bool) {
-				return errors.New("Recorded locked for update.")
+				return errors.New("Record is locked for update.")
 			}
 		}
 	}
@@ -162,7 +162,7 @@ func (m *Do) Delete() error {
 	if record != nil {
 		if v, found := record["IsLocked"]; found {
 			if v.(bool) {
-				return errors.New("Recorded locked for update.")
+				return errors.New("Record locked for delete.")
 			}
 		}
 	}
