@@ -79,14 +79,31 @@ func getModelName(m interface{}) string {
 //Create, generate objectId, upsert record with CreatedAt as Now
 func (m *Do) Create() error {
 	//generate new object Id
+	newId := bson.NewObjectId()
 	id := reflect.ValueOf(m.model).Elem().FieldByName("Id")
-	id.Set(reflect.ValueOf(bson.NewObjectId()))
+	id.Set(reflect.ValueOf(newId))
 	x := reflect.ValueOf(m.model).Elem().FieldByName("CreatedAt")
 	x.Set(reflect.ValueOf(time.Now()))
 	by := reflect.ValueOf(m.model).Elem().FieldByName("CreatedBy")
 	by.Set(reflect.ValueOf(m.Operator))
 	_, err := m.collection.Upsert(bson.M{"_id": id.Interface()}, bson.M{"$set": m.model})
+
 	return err
+}
+
+//CreateWithLog record log for creation
+func (m *Do) CreateWithLog() error {
+	var err error
+	err = m.Create()
+	if err != nil {
+		return err
+	}
+
+	err = m.saveLog(CREATE)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 //Save method, upsert record with UpdatedAt as now
@@ -125,7 +142,7 @@ func (m *Do) SaveWithLog() error {
 	return nil
 }
 
-//Erase is hard delete
+//Erase is hard delete according ID
 func (m *Do) Erase() error {
 	//hard delete record
 	id := reflect.ValueOf(m.model).Elem().FieldByName("Id")
@@ -135,14 +152,15 @@ func (m *Do) Erase() error {
 
 //EraseWithLog, hard delete record and insert a chagnelog
 func (m *Do) EraseWithLog() error {
+	// hard delete record
+	err := m.Erase()
+
 	// Save log
-	err := m.saveLog(ERASE)
+	err = m.saveLog(ERASE)
 	if err != nil {
 		return err
 	}
 
-	// hard delete record
-	err = m.Erase()
 	return err
 }
 
@@ -185,15 +203,17 @@ func (m *Do) DeleteWithLog() error {
 
 }
 
-//SaveWithLog
+//saveLog just copy a record to Changlog
 func (m *Do) saveLog(operation string) error {
 	//read current record
-	var record interface{}
-	recordId := reflect.ValueOf(m.model).Elem().FieldByName("Id").Interface().(bson.ObjectId)
-	err := m.collection.FindId(recordId).One(&record)
-	if err != nil {
-		return err
-	}
+	//var record interface{}
+	//recordId := reflect.ValueOf(m.model).Elem().FieldByName("Id").Interface().(bson.ObjectId)
+	//err := m.collection.FindId(recordId).One(&record)
+	//if err != nil {
+	//return err
+	//}
+
+	id := reflect.ValueOf(m.model).Elem().FieldByName("Id")
 
 	cl := new(ChangeLog)
 	cl.Id = bson.NewObjectId()
@@ -201,10 +221,10 @@ func (m *Do) saveLog(operation string) error {
 	cl.CreatedAt = time.Now()
 	cl.ChangeReason = m.Reason
 	cl.Operation = operation
-	cl.ModelObjId = recordId
+	cl.ModelObjId = id.Interface().(bson.ObjectId)
 	cl.ModelName = getModelName(m.model)
-	cl.ModelValue = record
-	_, err = m.logCollection.Upsert(bson.M{"_id": cl.Id}, bson.M{"$set": cl})
+	cl.ModelValue = id
+	_, err := m.logCollection.Upsert(bson.M{"_id": id}, bson.M{"$set": cl})
 	return err
 }
 

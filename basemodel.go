@@ -11,6 +11,7 @@ const (
 	UPDATE = "UPDATE"
 	DELETE = "DELETE" // soft delete
 	ERASE  = "ERASE"  // hard delete
+	CREATE = "CREATE" // hard delete
 )
 
 // BaseModel to be emmbered to other struct as audit trail perpurse
