@@ -223,8 +223,8 @@ func (m *Do) saveLog(operation string) error {
 	cl.Operation = operation
 	cl.ModelObjId = id.Interface().(bson.ObjectId)
 	cl.ModelName = getModelName(m.model)
-	cl.ModelValue = id
-	_, err := m.logCollection.Upsert(bson.M{"_id": id}, bson.M{"$set": cl})
+	cl.ModelValue = m.model
+	_, err := m.logCollection.Upsert(bson.M{"_id": cl.Id}, bson.M{"$set": cl})
 	return err
 }
 
