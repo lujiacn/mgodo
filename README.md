@@ -10,7 +10,6 @@ import mgodo "gopkg.in/lujiacn/mgodo.v0"
 
 
 
-
 > Copyright (c) 2017 Jia Lu <lujiacn@gmail.com>
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy of
