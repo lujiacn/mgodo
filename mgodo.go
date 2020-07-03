@@ -354,3 +354,16 @@ func (m *Do) EraseAll() error {
 	_, err := m.collection.RemoveAll(m.Query)
 	return err
 }
+
+// Erase all with log
+func (m *Do) EraseAllWithLog() error {
+	err := m.EraseAll()
+
+	// Save log
+	err = m.saveLog(ERASE)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
