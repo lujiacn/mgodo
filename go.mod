@@ -2,6 +2,8 @@ module github.com/lujiacn/mgodo
 
 go 1.13
 
+replace gopkg.in/fsnotify.v1 => github.com/fsnotify/fsnotify v1.4.9
+
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
