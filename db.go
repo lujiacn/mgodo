@@ -26,6 +26,7 @@ func Init() {
 	//New bind type
 	objID := bson.NewObjectId()
 	revel.TypeBinders[reflect.TypeOf(objID)] = ObjectIDBinder
+	fmt.Println("Debug", revel.TypeBinders)
 }
 
 //MgoDBConnect do mgo connection
