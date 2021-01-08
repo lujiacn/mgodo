@@ -386,7 +386,7 @@ func (m *Do) DirectSave() error {
 	return err
 }
 
-//SaveWithLog save record and inset a new changelog record
+//DirectSaveWithLog save record and inset a new changelog record
 func (m *Do) DirectSaveWithLog() error {
 	var err error
 	err = m.DirectSave()
