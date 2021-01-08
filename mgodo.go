@@ -354,3 +354,48 @@ func (m *Do) EraseAll() error {
 	_, err := m.collection.RemoveAll(m.Query)
 	return err
 }
+
+// Erase all with log
+func (m *Do) EraseAllWithLog() error {
+	err := m.EraseAll()
+
+	// Save log
+	err = m.saveLog(ERASE)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+//DirectSave method, upsert record without set UpdatedBy and UpdatedAt
+func (m *Do) DirectSave() error {
+	id := reflect.ValueOf(m.model).Elem().FieldByName("Id")
+	// check IsLocked flag
+	record := map[string]interface{}{}
+	m.collection.FindId(id.Interface()).Select(bson.M{"IsLocked": 1}).One(&record)
+	if record != nil {
+		if v, found := record["IsLocked"]; found {
+			if v.(bool) {
+				return errors.New("Record is locked for update.")
+			}
+		}
+	}
+
+	_, err := m.collection.Upsert(bson.M{"_id": id.Interface()}, bson.M{"$set": m.model})
+	return err
+}
+
+//DirectSaveWithLog save record and inset a new changelog record
+func (m *Do) DirectSaveWithLog() error {
+	var err error
+	err = m.DirectSave()
+	if err != nil {
+		return err
+	}
+	err = m.saveLog(UPDATE)
+	if err != nil {
+		return err
+	}
+	return nil
+}
