@@ -238,16 +238,27 @@ func (m *Do) Q() *mgo.Query {
 //findQ conduct mgo.Query, skip IsRemoved: true
 func (m *Do) findQ() *mgo.Query {
 	var query *mgo.Query
-	//do not query removed value
-	rmQ := []interface{}{bson.M{"is_removed": bson.M{"$ne": true}}, bson.M{"IsRemoved": bson.M{"$ne": true}}}
 	if m.Query != nil {
-		if v, found := m.Query["$and"]; !found {
-			m.Query["$and"] = rmQ
+		//do not query removed value
+		rmQ := []interface{}{bson.M{"is_removed": bson.M{"$ne": true}}, bson.M{"IsRemoved": bson.M{"$ne": true}}}
+		if v, foundIncludeRemoved := m.Query["includeRemoved"]; !foundIncludeRemoved {
+			if v, found := m.Query["$and"]; !found {
+				m.Query["$and"] = rmQ
+			} else {
+				m.Query["$and"] = append(v.([]interface{}), rmQ...)
+			}
 		} else {
-			m.Query["$and"] = append(v.([]interface{}), rmQ...)
+			if v == false {
+				if v, found := m.Query["$and"]; !found {
+					m.Query["$and"] = rmQ
+				} else {
+					m.Query["$and"] = append(v.([]interface{}), rmQ...)
+				}
+			}
+			delete(m.Query, "includeRemoved")
 		}
 	} else {
-		m.Query = bson.M{"$and": rmQ}
+		m.Query = bson.M{}
 	}
 
 	query = m.collection.Find(m.Query)
