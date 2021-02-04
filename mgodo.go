@@ -238,28 +238,39 @@ func (m *Do) Q() *mgo.Query {
 //findQ conduct mgo.Query, skip IsRemoved: true
 func (m *Do) findQ() *mgo.Query {
 	var query *mgo.Query
+	//do not query removed value
+	rmQ := []interface{}{bson.M{"is_removed": bson.M{"$ne": true}}, bson.M{"IsRemoved": bson.M{"$ne": true}}}
 	if m.Query != nil {
-		//do not query removed value
-		rmQ := []interface{}{bson.M{"is_removed": bson.M{"$ne": true}}, bson.M{"IsRemoved": bson.M{"$ne": true}}}
-		if v, foundIncludeRemoved := m.Query["includeRemoved"]; !foundIncludeRemoved {
-			if v, found := m.Query["$and"]; !found {
-				m.Query["$and"] = rmQ
-			} else {
-				m.Query["$and"] = append(v.([]interface{}), rmQ...)
-			}
+		if v, found := m.Query["$and"]; !found {
+			m.Query["$and"] = rmQ
 		} else {
-			if v == false {
-				if v, found := m.Query["$and"]; !found {
-					m.Query["$and"] = rmQ
-				} else {
-					m.Query["$and"] = append(v.([]interface{}), rmQ...)
-				}
-			}
-			delete(m.Query, "includeRemoved")
+			m.Query["$and"] = append(v.([]interface{}), rmQ...)
 		}
 	} else {
-		m.Query = bson.M{}
+		m.Query = bson.M{"$and": rmQ}
 	}
+
+	query = m.collection.Find(m.Query)
+	//sort
+	if m.Sort != nil {
+		query = query.Sort(m.Sort...)
+	}
+
+	//skip
+	if m.Skip != 0 {
+		query = query.Skip(m.Skip)
+	}
+
+	//limit
+	if m.Limit != 0 {
+		query = query.Limit(m.Limit)
+	}
+	return query
+}
+
+//findIncludeRemovedQ conduct mgo.Query, including marked as removed: isRemoved: true
+func (m *Do) findIncludeRemovedQ() *mgo.Query {
+	var query *mgo.Query
 
 	query = m.collection.Find(m.Query)
 	//sort
@@ -301,6 +312,13 @@ func (m *Do) FindAll(i interface{}) error {
 	return err
 }
 
+// FindAll except removed, i is interface address
+func (m *Do) FindAllIncludeRemoved(i interface{}) error {
+	query := m.findIncludeRemovedQ()
+	err := query.All(i)
+	return err
+}
+
 //Get will retrieve by _id
 func (m *Do) Get() error {
 	query := m.findByIdQ()
@@ -311,6 +329,13 @@ func (m *Do) Get() error {
 //GetByQ get first one based on query, model will be updated
 func (m *Do) GetByQ() error {
 	query := m.findQ()
+	err := query.One(m.model)
+	return err
+}
+
+//QueryIncludeRemoved get first one based on query include isRemoved: true, model will be updated
+func (m *Do) QueryIncludeRemoved() error {
+	query := m.findIncludeRemovedQ()
 	err := query.One(m.model)
 	return err
 }
