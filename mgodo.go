@@ -268,6 +268,28 @@ func (m *Do) findQ() *mgo.Query {
 	return query
 }
 
+//findIncludeRemovedQ conduct mgo.Query, including marked as removed: isRemoved: true
+func (m *Do) findIncludeRemovedQ() *mgo.Query {
+	var query *mgo.Query
+
+	query = m.collection.Find(m.Query)
+	//sort
+	if m.Sort != nil {
+		query = query.Sort(m.Sort...)
+	}
+
+	//skip
+	if m.Skip != 0 {
+		query = query.Skip(m.Skip)
+	}
+
+	//limit
+	if m.Limit != 0 {
+		query = query.Limit(m.Limit)
+	}
+	return query
+}
+
 //findByIdQ, skip IsRemoved:true
 func (m *Do) findByIdQ() *mgo.Query {
 	id := reflect.ValueOf(m.model).Elem().FieldByName("Id").Interface()
@@ -290,6 +312,13 @@ func (m *Do) FindAll(i interface{}) error {
 	return err
 }
 
+// FindAll except removed, i is interface address
+func (m *Do) FindAllIncludeRemoved(i interface{}) error {
+	query := m.findIncludeRemovedQ()
+	err := query.All(i)
+	return err
+}
+
 //Get will retrieve by _id
 func (m *Do) Get() error {
 	query := m.findByIdQ()
@@ -300,6 +329,13 @@ func (m *Do) Get() error {
 //GetByQ get first one based on query, model will be updated
 func (m *Do) GetByQ() error {
 	query := m.findQ()
+	err := query.One(m.model)
+	return err
+}
+
+//QueryIncludeRemoved get first one based on query include isRemoved: true, model will be updated
+func (m *Do) QueryIncludeRemoved() error {
+	query := m.findIncludeRemovedQ()
 	err := query.One(m.model)
 	return err
 }
