@@ -44,7 +44,7 @@ func Connect() {
 		if err != nil {
 			revel.AppLog.Errorf("Could not connect to Mongo DB. Error: %s", err)
 			for i := 0; i <= 3; i++ {
-				revel.AppLog.Infof("Retry connect to database ...")
+				revel.AppLog.Info("Retry connect to database ...")
 				time.Sleep(3 * time.Second)
 				Session, err = mgo.Dial(Dial)
 				if err == nil {
@@ -110,7 +110,7 @@ var ObjectIDBinder = revel.Binder{
 
 		}
 
-		revel.AppLog.Errorf("ObjectIDBinder.Bind - invalid ObjectId!")
+		revel.AppLog.Error("ObjectIDBinder.Bind - invalid ObjectId!")
 		return reflect.Zero(typ)
 
 	}),
@@ -123,7 +123,7 @@ var ObjectIDBinder = revel.Binder{
 			output[name] = hexStr
 
 		} else {
-			revel.AppLog.Errorf("ObjectIDBinder.Bind - invalid ObjectId!")
+			revel.AppLog.Error("ObjectIDBinder.Bind - invalid ObjectId!")
 			output[name] = ""
 
 		}
