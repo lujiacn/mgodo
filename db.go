@@ -42,7 +42,7 @@ func Connect() {
 	if Session == nil {
 		Session, err = mgo.Dial(Dial)
 		if err != nil {
-			revel.AppLog.Errorf("Could not connect to Mongo DB. Error: %s", err)
+			revel.AppLog.Errorf("Could not connect to Mongo DB. Error: %v", err)
 			for i := 0; i <= 3; i++ {
 				revel.AppLog.Info("Retry connect to database ...")
 				time.Sleep(3 * time.Second)
@@ -50,7 +50,7 @@ func Connect() {
 				if err == nil {
 					break
 				} else {
-					revel.AppLog.Errorf("Could not connect to Mongo DB. Error: %s", err)
+					revel.AppLog.Errorf("Could not connect to Mongo DB. Error: %v", err)
 				}
 			}
 		}
